@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from re import findall
 from requests import get
 from urllib.parse import unquote_plus
-
+from flask_cors import CORS
 
 def get_link_offline(link):
     data = findall(r"d/\w+", link)
@@ -26,6 +26,7 @@ def get_link_online(link):
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'iureyu48783d#8*#^37489xnhkc'
+CORS(app)
 
 
 @app.route("/", methods=['POST'])
