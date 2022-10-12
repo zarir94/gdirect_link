@@ -5,7 +5,7 @@ from urllib.parse import unquote_plus
 from flask_cors import CORS
 
 def get_link_offline(link):
-    data = findall(r"d/\w+", link)
+    data = findall(r"d/.*", link)
     if not data:
         return False
     file_id = data[0].split('/')[1]
@@ -16,10 +16,10 @@ def get_link_offline(link):
 def get_link_online(link):
     resp = get(link)
     html = resp.text
-    data = findall(r"{config: {'id': '\w+'", html)
+    data = findall(r"{config: {'id': '.*'", html)
     if not data:
         return False
-    file_id = findall(r"\w+", data[0])[-1]
+    file_id = data[0].split(",")[0][17:-1]
     direct_link = f"https://drive.google.com/uc?id={file_id}&export=download&confirm=t"
     return direct_link
 
