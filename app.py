@@ -29,8 +29,10 @@ app.config['SECRET_KEY'] = 'iureyu48783d#8*#^37489xnhkc'
 CORS(app)
 
 
-@app.route("/", methods=['POST'])
+@app.route("/", methods=['GET', 'POST'])
 def home():
+    if request.method=='GET':
+        return 'Server is up'
     link = unquote_plus(request.form.get('url'))
     mode = request.form.get('mode', 'online')
     if mode == 'online':
