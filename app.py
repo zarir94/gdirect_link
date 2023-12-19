@@ -8,21 +8,30 @@ from flask_cors import CORS
 def get_link_offline(link):
 	data = findall(r"d/.*", link)
 	if not data:
+		data = findall(r"id=.*", link)
+	if not data:
 		return False
-	file_id = data[0].split('/')[1]
+	if '/' in data[0]:
+		file_id = data[0].split('/')[1]
+	else:
+		file_id = data[0].split('=')[1]
 	direct_link = f"https://drive.google.com/uc?id={file_id}&export=download&confirm=t"
 	return direct_link
 
 
 def get_link_online(link):
+	print('START:1')
 	resp = get(link)
+	print('END:1')
 	html = resp.text
 	data = findall(r"{config: {'id': '.*'", html)
 	if not data:
 		return False
 	file_id = data[0].split(",")[0][17:-1]
 	direct_link = f"https://drive.google.com/uc?id={file_id}&export=download&confirm=t"
-	resp=get(f'https://drive.google.com/uc?id={file_id}&export=download', allow_redirects=False)
+	print('START:2')
+	resp=get(f'https://drive.google.com/uc?id={file_id}&export=download', allow_redirects=False, timeout=5)
+	print('END:2')
 	if resp.status_code!=303:
 		html=resp.text
 		find=findall('uuid=(.*?)"', html)
@@ -41,7 +50,7 @@ CORS(app)
 @app.route("/", methods=['GET', 'POST'])
 def home():
 	if request.method == 'GET':
-		return 'Server is up v3.2'
+		return 'Server is up v3.5'
 	link = unquote_plus(request.form.get('url'))
 	mode = request.form.get('mode', 'online')
 	if mode == 'online':
